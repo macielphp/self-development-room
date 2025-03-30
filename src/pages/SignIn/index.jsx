@@ -1,7 +1,8 @@
 import React from 'react';
 // import { makeStyles } from '@mui/styles';
 import { Box, Card, CardMedia, Typography, TextField, Button } from "@mui/material";
-import image from '../../assets/6079434.jpg'
+import image from '../../assets/6079434.jpg';
+import { Link } from 'react-router-dom';
 
 // const useStyles = makeStyles({
 //     container: {
@@ -34,7 +35,7 @@ const SignIn = () => {
                 {/* Register link */}
                 <Typography variant='body1' color='textSecondary'>Don't have an account?{" "} 
                     <Typography component='span' color='primary' sx={{cursor: 'pointer' }}>
-                        Sign up
+                        <Link to='/signup' style={{ color: '#007bff', textDecoration: 'none', fontWeight: 'bold' }}>Sign up</Link>
                     </Typography>
                 </Typography>
 
@@ -52,7 +53,7 @@ const SignIn = () => {
                 {/* <button style={{ padding: "10px", borderRadius: "4px", background: "#007bff", color: "#fff", border: "none", cursor: "pointer" }}>
                         Sign in
                 </button> */}
-                <Button variant='contained' color='primary' size='large'>
+                <Button variant='contained' color='secondary' size='large'>
                     Sign in
                 </Button>
 
