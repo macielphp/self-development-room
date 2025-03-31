@@ -23,7 +23,6 @@ const SignUp = () => {
     const {
         register,
         handleSubmit,
-        setValue,
         reset,
         formState: { errors }
     } = useForm({
@@ -100,7 +99,7 @@ const SignUp = () => {
                             <Checkbox 
                                 color='primary' 
                                 // checked={acceptedTerms} 
-                                onChange={(e) => setValue('acceptedTerms', e.target.checked)}
+                                {...register('acceptedTerms')}
                             />} 
                         label={
                             <Typography>
