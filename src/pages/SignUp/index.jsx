@@ -5,7 +5,9 @@ import * as yup from 'yup';
 import { Box, Card, CardMedia, Typography, TextField, Button, Checkbox, FormControlLabel, Snackbar, Alert } from '@mui/material';
 import { Link } from 'react-router-dom'
 import image from '../../assets/6079434.jpg';
+import { fakeDatabase } from '../../utils/fakeDatabase/fakeDatabase';
 
+// Validation with yup
 const validationSchema = yup.object().shape({
     firstName: yup.string().required('First name is required'),
     lastName: yup.string().required('Last name is required'),
@@ -15,6 +17,7 @@ const validationSchema = yup.object().shape({
 })
 
 const SignUp = () => {
+
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
     const {
@@ -27,21 +30,13 @@ const SignUp = () => {
         resolver: yupResolver(validationSchema)
     });
 
-    // const [acceptedTerms, setAcceptedTerms] = useState(false);
-    // const [errorMessage, setErrorMessage] = useState('');
-
-    // const handleSignUp = () => {
-    //     if (!acceptedTerms) {
-    //         setErrorMessage('You must accept the terms and conditions.')
-    //         return;
-    //     } 
-    //     setErrorMessage('');
-    //     console.log('Usuário cadastrado!')
-    // }
-
+    // Function on submit
     const onSubmit = (data) =>{
-        console.log('usuário cadastrado:', data);
+        // Store the user's email e password in the fakeDatabase(localStorage)
+        fakeDatabase.setUser(data.email, data.password);
+
         setOpenSnackbar(true);
+        console.log('usuário cadastrado:', data);
         reset(); //Clean the Textfields after signing up
     };
 
@@ -125,7 +120,7 @@ const SignUp = () => {
                     )}
                 </Box>
                 
-                <Button variant='contained' color='secondary' size='large' onClick={handleSubmit(onSubmit)}>Sign up</Button>
+                <Button variant='contained' color='secondary' size='large' onClick={handleSubmit(onSubmit)} style={{borderRadius:'14px'}}>Sign up</Button>
             </Box>
         </Box>
         <Box flex={1} display='flex' alignItems='center' justifyContent='center'>
