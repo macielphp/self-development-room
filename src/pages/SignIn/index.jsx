@@ -1,32 +1,18 @@
 import React, { useState } from 'react';
-// import { makeStyles } from '@mui/styles';
-import { Box, Card, CardMedia, Typography, TextField, Button, Alert } from "@mui/material";
+import { Box, Card, CardMedia, Typography, TextField, Button, Alert, Snackbar } from "@mui/material";
 import { Link, useNavigate } from 'react-router-dom';
 import image from '../../assets/6079434.jpg';
 import { fakeDatabase } from '../../utils/fakeDatabase/fakeDatabase';
-
-// const useStyles = makeStyles({
-//     container: {
-//         display: 'flex',
-//         flexDirection: 'row',
-//     },
-//     leftSide: {
-//         width: '50%',
-//         height: '100vh',
-//         backgroundColor: '#ebf2f4'
-//     },
-//     rightSide: {
-//         width: '50%',
-//         height: '100vh'
-//     }
-// })
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
 
 const SignIn = () => {
-    // const classes = useStyles();
     const navigate = useNavigate();
     const [email, setEmail]  = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const handleSignIn = () => {
         const trimmedEmail = email.trim();
@@ -38,9 +24,25 @@ const SignIn = () => {
             // if the login successed, so redirect to the Home page
             navigate('/home');
         } else {
-            setError('Invalid email or password')
-        }
-    }
+            setError('Invalid email or password');
+        };
+    };
+    
+    const handleGoogleLogin = (credentialResponse) => {
+        const token = credentialResponse.credential;
+        const userEmail = jwtDecode(token)?.email;
+
+        if (userEmail) {
+            const user = fakeDatabase.getUserByEmail(userEmail);
+
+            if (user){
+                navigate('/home');
+            } else{
+                setSnackbarMessage('User not found. Please, sign up.');
+                setSnackbarOpen(true);
+            };
+        };
+    };
 
     return (
     <Box display='flex' height='100vh' width='100%' fontSize="15px">
@@ -90,7 +92,9 @@ const SignIn = () => {
                 <Button variant='contained' color='secondary' size='large' onClick={handleSignIn} style={{borderRadius:'14px'}} >
                     Sign in
                 </Button>
-
+                <GoogleLogin 
+                onSuccess={handleGoogleLogin} 
+                onError={() => console.log('Loging failed')} />
             </Box>
         </Box>
         {/* Right Box */}
@@ -104,6 +108,11 @@ const SignIn = () => {
                 />
             </Card>
         </Box>
+        {/* Snackbar for feedback */}
+        <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={() => setSnackbarOpen(false)}
+            message = {snackbarMessage}
+            anchorOrigin = {{ vertical: 'top', horizontal: 'center' }}    
+        />
     </Box>
     )
 }

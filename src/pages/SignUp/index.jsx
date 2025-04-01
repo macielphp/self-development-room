@@ -3,9 +3,11 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Box, Card, CardMedia, Typography, TextField, Button, Checkbox, FormControlLabel, Snackbar, Alert } from '@mui/material';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import image from '../../assets/6079434.jpg';
 import { fakeDatabase } from '../../utils/fakeDatabase/fakeDatabase';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 // Validation with yup
 const validationSchema = yup.object().shape({
@@ -16,9 +18,14 @@ const validationSchema = yup.object().shape({
     acceptedTerms: yup.bool().oneOf([true], 'You must accept the terms and conditions'),
 })
 
-const SignUp = () => {
 
+
+const SignUp = () => {
+    const navigate = useNavigate();
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [snackbarMessage, setSnackbarMessage] =  useState('');
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
 
     const {
         register,
@@ -33,11 +40,37 @@ const SignUp = () => {
     const onSubmit = (data) =>{
         // Store the user's email e password in the fakeDatabase(localStorage)
         fakeDatabase.setUser(data.email, data.password);
-
+        setSnackbarMessage('User registred successfully!');
         setOpenSnackbar(true);
+
         console.log('usuário cadastrado:', data);
         reset(); //Clean the Textfields after signing up
+
+        setTimeout(() => navigate('/home'), 2000);
+
     };
+
+    // Google login
+    const handleGoogleSignUp = (credentialResponse) => {
+        const token = credentialResponse.credential;
+        const decoded = jwtDecode(token);
+    
+        if (decoded?.email) {
+            const existingUser = fakeDatabase.getUserByEmail(decoded.email);
+    
+            if(existingUser) {
+                setSnackbarMessage('Failed to register');
+                setSnackbarSeverity('error');
+            } else {
+                fakeDatabase.setUser(decoded.email, 'google-auth');
+                setSnackbarMessage('User registred successfully!')
+                setSnackbarSeverity('success'); 
+                
+                setTimeout(() => navigate('/home'), 2000);
+            }
+            setOpenSnackbar(true)
+        }
+    }
 
     return (
     <Box display='flex' height= '100vh' width='100%' fontSize='15px'>
@@ -98,8 +131,9 @@ const SignUp = () => {
                         control={
                             <Checkbox 
                                 color='primary' 
-                                // checked={acceptedTerms} 
-                                {...register('acceptedTerms')}
+                                checked={acceptedTerms} 
+                                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                                // {...register('acceptedTerms')}
                             />} 
                         label={
                             <Typography>
@@ -112,14 +146,26 @@ const SignUp = () => {
                     />
                     {/* If the user do not accept the terms, warn him/her and do not send the data */}
                     {/* A text has to appear has below this FormControlLabel instead of a alert*/}
-                    {errors.acceptedTerms && (
+                    {/* {errors.acceptedTerms && (
                         <Typography color='error' variant='body2'>
                             {errors.acceptedTerms.message}
                         </Typography>
-                    )}
+                    )} */}
                 </Box>
-                
-                <Button variant='contained' color='secondary' size='large' onClick={handleSubmit(onSubmit)} style={{borderRadius:'14px'}}>Sign up</Button>
+                <GoogleLogin 
+                    onSuccess={handleGoogleSignUp}
+                    onError={() => console.log('Google sign-up failed')}
+                />
+                <Button 
+                    variant='contained' 
+                    color='secondary' 
+                    size='large' 
+                    onClick={handleSubmit(onSubmit)} 
+                    style={{borderRadius:'14px'}}
+                    disabled={!acceptedTerms}
+                >
+                    Sign up
+                </Button>
             </Box>
         </Box>
         <Box flex={1} display='flex' alignItems='center' justifyContent='center'>
@@ -135,8 +181,8 @@ const SignUp = () => {
 
         {/*  Snackbar success */}
         <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={() => setOpenSnackbar(false)}>
-            <Alert onClose={() => setOpenSnackbar(false)} severity='success'>
-                User registred successfully!
+            <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+                {snackbarMessage}
             </Alert>
         </Snackbar>
     </Box>
