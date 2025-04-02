@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -20,6 +21,8 @@ import LanguageIcon from '@mui/icons-material/Language';
 import HomeIcon from '@mui/icons-material/Home';
 import Avatar from '@mui/material/Avatar';
 import { fakeDatabase } from '../../utils/fakeDatabase/fakeDatabase';
+import Badge from '@mui/material/Badge';
+import NotificationIcon from '@mui/icons-material/Notifications';
 
 const drawerWidth = 180;
 
@@ -85,6 +88,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 export default function PersistentDrawerLeft() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -93,6 +97,11 @@ export default function PersistentDrawerLeft() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const handleNavigation = (page) => {
+    navigate(page);
+    setOpen(false);
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -116,11 +125,18 @@ export default function PersistentDrawerLeft() {
                 color:"#121621"
               }} />
           </IconButton>
-          <Avatar 
-            alt={userData?.firstName || "User"}
-            src={userProfilePicture || "/default-avatar.png"}
-            sx={{ width: 40, height: 40 }}
-          />
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <IconButton color="inherit">
+              <Badge badgeContent={3} color="error"> {/* notification number */}
+                <NotificationIcon sx={{ fontSize:"1.5rem" , color:"#121621" }} />
+              </Badge>
+            </IconButton>
+            <Avatar 
+              alt={userData?.firstName || "User"}
+              src={userProfilePicture || "/default-avatar.png"}
+              sx={{ width: '40px', height: '40px' }}
+            />
+          </Box>
         </Toolbar>
         
       </AppBar>
@@ -148,16 +164,22 @@ export default function PersistentDrawerLeft() {
         </DrawerHeader>
         <Divider sx={{ borderColor: "#ffffff60"}}/>
         <List>
-          {['Home', 'Languages'].map((text) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {text === "Home" ? <HomeIcon sx={{ color: "#FFF"}} /> : <LanguageIcon sx={{ color: "#FFF"}} />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleNavigation('/home')}>
+              <ListItemIcon>
+                <HomeIcon sx={{ color: "#FFF"}} />
+              </ListItemIcon>
+              <ListItemText primary='Home' />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleNavigation('/languagepage')}>
+              <ListItemIcon>
+                <LanguageIcon sx={{ color: "#FFF"}} />
+              </ListItemIcon>
+              <ListItemText primary='Languages' />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Drawer>
       <Main open={open}>
