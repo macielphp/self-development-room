@@ -16,10 +16,17 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import LanguageIcon from '@mui/icons-material/Language'; 
+import HomeIcon from '@mui/icons-material/Home';
+import Avatar from '@mui/material/Avatar';
+import { fakeDatabase } from '../../utils/fakeDatabase/fakeDatabase';
 
-const drawerWidth = 240;
+const drawerWidth = 180;
+
+// Google data
+const userEmail = JSON.parse(localStorage.getItem('users'))?.[0]?.email || '';
+const userData = userEmail ? fakeDatabase.getUserByEmail(userEmail) : null;
+const userProfilePicture = userData?.profilePicture || ''; // URL da imagem de perfil
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme }) => ({
@@ -91,7 +98,7 @@ export default function PersistentDrawerLeft() {
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
-        <Toolbar>
+        <Toolbar sx={{ dispaly: "flex !important", justifyContent: "space-between",backgroundColor: "#FFF"}} variant="regular">
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -101,15 +108,21 @@ export default function PersistentDrawerLeft() {
               {
                 mr: 2,
               },
-              open && { display: 'none' },
+              open && { visibility: 'hidden', width: 0, overFlow: 'hidden' },
             ]}
           >
-            <MenuIcon />
+            <MenuIcon
+              sx={{
+                color:"#121621"
+              }} />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Persistent drawer
-          </Typography>
+          <Avatar 
+            alt={userData?.firstName || "User"}
+            src={userProfilePicture || "/default-avatar.png"}
+            sx={{ width: 40, height: 40 }}
+          />
         </Toolbar>
+        
       </AppBar>
       <Drawer
         sx={{
@@ -118,38 +131,28 @@ export default function PersistentDrawerLeft() {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            backgroundColor: "#121621",
+            color: '#fff'
           },
         }}
         variant="persistent"
         anchor="left"
         open={open}
+        
       >
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
-            {/* Aqui o botão fecha o Drawer ao clicar */}
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            {theme.direction === 'ltr' ? <ChevronLeftIcon sx={{color:"#fff"}} /> : <ChevronRightIcon />}
           </IconButton>
+         
         </DrawerHeader>
-        <Divider />
+        <Divider sx={{ borderColor: "#ffffff60"}}/>
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          {['Home', 'Languages'].map((text) => (
             <ListItem key={text} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {text === "Home" ? <HomeIcon sx={{ color: "#FFF"}} /> : <LanguageIcon sx={{ color: "#FFF"}} />}
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
@@ -159,10 +162,6 @@ export default function PersistentDrawerLeft() {
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
-        <Typography sx={{ marginBottom: 2 }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua.
-        </Typography>
       </Main>
     </Box>
   );

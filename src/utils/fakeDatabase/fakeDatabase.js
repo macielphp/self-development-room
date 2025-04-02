@@ -1,12 +1,12 @@
 export const fakeDatabase = {
     
-    setUser: (email, password) => {
-        
-        localStorage.setItem('users', JSON.stringify([{ email, password }]));
+    setUser: (firstName, lastName ,email, password, profilePicture = null) => {
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        users.push({ firstName, lastName, email, password, profilePicture });
+        localStorage.setItem('users', JSON.stringify(users));
     },
 
     getUserByEmail: (email) => {
-       
         const users = JSON.parse(localStorage.getItem('users') || '[]');
         return users.find(user => user.email === email); 
     }

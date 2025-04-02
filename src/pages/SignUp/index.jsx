@@ -39,7 +39,7 @@ const SignUp = () => {
     // Function on submit
     const onSubmit = (data) =>{
         // Store the user's email e password in the fakeDatabase(localStorage)
-        fakeDatabase.setUser(data.email, data.password);
+        fakeDatabase.setUser(data.firstName, data.lastName, data.email, data.password);
         setSnackbarMessage('User registred successfully!');
         setOpenSnackbar(true);
 
@@ -62,7 +62,12 @@ const SignUp = () => {
                 setSnackbarMessage('Failed to register');
                 setSnackbarSeverity('error');
             } else {
-                fakeDatabase.setUser(decoded.email, 'google-auth');
+                const nameParts = decoded.name.split(" ");
+                const firstName = nameParts[0];
+                const lastName = nameParts.slice(1).join(" ") || "Google User";
+
+                fakeDatabase.setUser(firstName, lastName, decoded.email, "google-auth", decoded.picture);
+                
                 setSnackbarMessage('User registred successfully!')
                 setSnackbarSeverity('success'); 
                 
