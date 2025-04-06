@@ -6,12 +6,21 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-node_modules
-dist
-dist-ssr
+
+# Ignore node_modules em qualquer subpasta
+**/node_modules
+
+# Build directories
+**/dist
+**/dist-ssr
+
+# Local env files
+**/.env
+
+# Local config files
 *.local
 
-# Editor directories and files
+# Editor settings
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -21,7 +30,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-
-# Env
-.env
