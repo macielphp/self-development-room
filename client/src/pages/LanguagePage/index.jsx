@@ -13,13 +13,15 @@ import {
   Stepper,
   Step,
   StepLabel,
-  Typography
+  Typography,
+  Card,
+  CardContent
 } from '@mui/material';
 import PersistentDrawer from './../../components/PersistentDrawer';
 import MediaCard from '../../components/MediaCard';
 import defaultImage from './../../assets/statue-liberty-liberty-island-new-york.jpg';
 import { getAllSeasons } from '../../api/seasonsApi';
-import { getLessonsBySeason } from '../../api/lessonsApi';
+import { getLessonsBySeason } from '../../api/lessonsApi.js';
 
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -40,6 +42,8 @@ const LanguagePage = () => {
   const [seasons, setSeasons] = useState([]);
   const [loadingSeasons, setLoadingSeasons] = useState(true);
   const [lessons, setLessons] = useState([]);
+  const [completedLessons, setCompletedLessons] = useState([]);
+  const [showSeasons, setShowSeasons] = useState(true);
 
   useEffect(() => {
     const fetchSeasons = async () => {
@@ -52,6 +56,25 @@ const LanguagePage = () => {
       fetchSeasons();
     }
   }, [isFormCompleted]);
+
+  const handleStartSeason = async (seasonId) => {
+  
+    try {
+      const [lessonsData, progressRes] = await Promise.all([
+        getLessonsBySeason(seasonId),
+        fetch(`http://localhost:3001/api/progress/1`)
+      ]);
+  
+      const progressData = await progressRes.json();
+      const completedLessonIds = progressData.map((p) => p.lesson_id);
+  
+      setLessons(lessonsData);
+      setCompletedLessons(completedLessonIds);
+      setShowSeasons(false);
+    } catch (err) {
+      console.error("Erro ao buscar lições e progresso:", err);
+    }
+  };
 
   const handleNext = () => setActiveStep((prev) => prev + 1);
   const handleBack = () => setActiveStep((prev) => prev - 1);
@@ -75,15 +98,6 @@ const LanguagePage = () => {
     alert("Study plan saved!");
     setIsFormCompleted(true);
   };
-  
-  const [showSeasons, setShowSeasons] = useState(true);
-
-  const handleStartSeason = async (seasonId) => {
-    const data = await getLessonsBySeason(seasonId);
-    setLessons(data);
-    setShowSeasons(false); // Hide seasons after starting one
-    console.log(`Lessons from season ${seasonId}:`, data);
-  };
 
   return (
     <>
@@ -91,7 +105,7 @@ const LanguagePage = () => {
 
       {isFormCompleted ? (
         <Box p={4}>
-          <Typography variant="h4" mb={2}>🎯 Your Language Roadmap</Typography>
+          <Typography variant="h5" mb={2}>🎯 Your Language Roadmap</Typography>
 
           <Box display="flex" flexWrap="wrap" justifyContent="center">
             {loadingSeasons ? (
@@ -121,23 +135,49 @@ const LanguagePage = () => {
 
           {lessons.length > 0 && (
             <Box mt={4}>
-              <Typography variant="h5" gutterBottom>📚 Lessons</Typography>
-              {lessons.map((lesson) => (
-                <Box key={lesson.id} p={2} mb={2} border="1px solid #ccc" borderRadius={2}>
-                  <Typography variant="h6">{lesson.title}</Typography>
-                  <Typography variant="body2">
-                    Video:{" "}
-                    <a
-                      href={lesson.lesson_content}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {lesson.lesson_content}
-                    </a>
-                  </Typography>
-                </Box>
-              ))}
+            <Typography variant="h5" gutterBottom>📚 Lessons</Typography>
+            <Box display="flex" flexWrap="wrap" gap={2}>
+              {lessons.map((lesson, index) => {
+                const isCompleted = completedLessons.includes(lesson.id);
+                const isFirst = index === 0;
+                const previousLessonCompleted = index === 0 || completedLessons.includes(lessons[index - 1]?.id);
+                const isUnlocked = isFirst || previousLessonCompleted;
+          
+                return (
+                  <Card
+                    key={lesson.id}
+                    sx={{
+                      width: 300,
+                      opacity: isUnlocked ? 1 : 0.5,
+                      border: isCompleted
+                        ? '2px solid green'
+                        : isUnlocked
+                        ? '2px solid blue'
+                        : '2px solid gray',
+                    }}
+                  >
+                    <CardContent>
+                      <Typography variant="h6">{lesson.title}</Typography>
+                      <Typography variant="body2">
+                        Video:{" "}
+                        <a
+                          href={lesson.lesson_content}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {lesson.lesson_content}
+                        </a>
+                      </Typography>
+                      {isCompleted && <p>✅ Concluída</p>}
+                      {!isCompleted && isUnlocked && <p>🔓 Disponível</p>}
+                      {!isUnlocked && <p>🔒 Bloqueada</p>}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </Box>
+          </Box>
+          
           )}
         </Box>
       ) : (
