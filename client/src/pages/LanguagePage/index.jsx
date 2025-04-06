@@ -134,7 +134,7 @@ const LanguagePage = () => {
           </Box>
 
           {lessons.length > 0 && (
-            <Box mt={4}>
+          <Box mt={4}>
             <Typography variant="h5" gutterBottom>📚 Lessons</Typography>
             <Box display="flex" flexWrap="wrap" gap={2}>
               {lessons.map((lesson, index) => {
