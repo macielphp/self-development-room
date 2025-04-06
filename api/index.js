@@ -4,6 +4,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import progressRoutes from './routes/progressRoutes.js';
 import seasonsRoutes from './routes/seasonsRoutes.js';
+import lessonRoutes from './routes/lessonRoutes.js';
+import questionRoutes from './routes/questionRoutes.js';
 
 dotenv.config();
 
@@ -16,6 +18,8 @@ app.use(express.json());
 // Routes
 app.use('/api/progress', progressRoutes);
 app.use('/api/seasons', seasonsRoutes);
+app.use('/api/lessons', lessonRoutes);
+app.use('/api/questions', questionRoutes);
 
 // Tests
 app.get('/', (req, res) => {

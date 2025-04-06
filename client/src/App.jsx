@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import ResetPassword from "./pages/ResetPassword";
 import LanguagePage from './pages/LanguagePage'
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import LessonContentWrapper from '../src/pages/LessonContentWrapper'
 
 const CLIENT_ID = import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
 
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/resetpassword" element={<ResetPassword />} />
           <Route path="/languagepage" element={<LanguagePage />} />
+          <Route path="/lesson/:lessonId" element={<LessonContentWrapper />} />
         </Routes>
       </Router>
     </GoogleOAuthProvider>

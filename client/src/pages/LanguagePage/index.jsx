@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import SportsScoreIcon from '@mui/icons-material/SportsScore';
+import BlockIcon from '@mui/icons-material/Block';
 import {
   Box,
   Button,
@@ -22,6 +24,7 @@ import MediaCard from '../../components/MediaCard';
 import defaultImage from './../../assets/statue-liberty-liberty-island-new-york.jpg';
 import { getAllSeasons } from '../../api/seasonsApi';
 import { getLessonsBySeason } from '../../api/lessonsApi.js';
+import { Link } from 'react-router-dom';
 
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -169,8 +172,15 @@ const LanguagePage = () => {
                         </a>
                       </Typography>
                       {isCompleted && <p>✅ Concluída</p>}
-                      {!isCompleted && isUnlocked && <p>🔓 Disponível</p>}
-                      {!isUnlocked && <p>🔒 Bloqueada</p>}
+                      {!isCompleted && isUnlocked && (
+                        <Link to={`/lesson/${lesson.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <SportsScoreIcon />
+                            <Typography>Start</Typography>
+                          </Box>
+                        </Link>
+                      )}
+                      {!isUnlocked && <p><BlockIcon /> Locked</p>}
                     </CardContent>
                   </Card>
                 );
