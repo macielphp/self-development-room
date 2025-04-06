@@ -101,3 +101,11 @@ INSERT INTO alternatives (question_id, text, is_correct) VALUES
 (7, 'Approximately three months.', TRUE),
 (7, 'One full year.', FALSE),
 (7, 'Until he memorizes 1000 words.', FALSE);
+
+CREATE TABLE user_lesson_progress (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  lesson_id INTEGER REFERENCES lessons(id) ON DELETE CASCADE,
+  completed BOOLEAN DEFAULT FALSE,
+  UNIQUE(user_id, lesson_id)
+);
