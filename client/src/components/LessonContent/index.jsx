@@ -36,6 +36,8 @@ const LessonContent = ({ videoUrl, questions }) => {
 
   const allAnswered = questions.length > 0 && questions.every((q) => selectedAnswers[q.id]);
 
+  const [videoWatched, setVideoWatched] = useState(false);
+
   return (
     <Box p={3}>
       <Typography variant="h5" gutterBottom>Video Class</Typography>
@@ -49,52 +51,69 @@ const LessonContent = ({ videoUrl, questions }) => {
         allowFullScreen
       />
 
-      <Typography variant="h6" gutterBottom>Questions</Typography>
-      {questions.map((q, i) => (
-        <Accordion key={q.id} sx={{ mb: 2 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>{`Question ${i + 1}`}</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography mb={2}>{q.text}</Typography>
-            <Box display="flex" flexDirection="column" gap={1}>
-              {q.alternatives.map((alt) => {
-                const isSelected = selectedAnswers[q.id] === alt.id;
-                const isCorrect = correctAnswers[q.id] === alt.id;
+      {!videoWatched ? (
+        <Box textAlign="center" mb={4}>
+          <Button variant='outlined' color='success' onClick={() => setVideoWatched(true)}>
+            I watched it!
+          </Button>
+        </Box>
+      ) : (
+          <Box textAlign='center' mb={4}>
+            <Typography variant='body1' color='green'>Great! Now awnser the questions below.</Typography>
+          </Box>
+      )
 
-                const bgColor = submitted
-                  ? isCorrect
-                    ? 'lightgreen'
-                    : isSelected
-                      ? 'salmon'
-                      : '#fff'
-                  : isSelected
-                    ? '#d3e3fc'
-                    : '#fff';
+      }
+      {videoWatched && (
+        <>
+          <Typography variant="h6" gutterBottom>Questions</Typography>
+          {questions.map((q, i) => (
+            <Accordion key={q.id} sx={{ mb: 2 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>{`Question ${i + 1}`}</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography mb={2}>{q.text}</Typography>
+                <Box display="flex" flexDirection="column" gap={1}>
+                  {q.alternatives.map((alt) => {
+                    const isSelected = selectedAnswers[q.id] === alt.id;
+                    const isCorrect = correctAnswers[q.id] === alt.id;
 
-                return (
-                  <Paper
-                    key={alt.id}
-                    onClick={() => handleSelect(q.id, alt.id)}
-                    sx={{
-                      p: 2,
-                      cursor: submitted ? 'default' : 'pointer',
-                      backgroundColor: bgColor,
-                      border: '1px solid #ccc',
-                      borderRadius: 1,
-                      '&:hover': {
-                        backgroundColor: submitted ? bgColor : '#f5f5f5'
-                      }
-                    }}
-                  >
-                    {alt.text}
-                  </Paper>
-                );
-              })}
-            </Box>
-          </AccordionDetails>
-        </Accordion>
+                    const bgColor = submitted
+                      ? isCorrect
+                        ? 'lightgreen'
+                        : isSelected
+                          ? 'salmon'
+                          : '#fff'
+                      : isSelected
+                        ? '#d3e3fc'
+                        : '#fff';
+
+                    return (
+                      <Paper
+                        key={alt.id}
+                        onClick={() => handleSelect(q.id, alt.id)}
+                        sx={{
+                          p: 2,
+                          cursor: submitted ? 'default' : 'pointer',
+                          backgroundColor: bgColor,
+                          border: '1px solid #ccc',
+                          borderRadius: 1,
+                          '&:hover': {
+                            backgroundColor: submitted ? bgColor : '#f5f5f5'
+                          }
+                        }}
+                      >
+                        {alt.text}
+                      </Paper>
+                    );
+                  })}
+                </Box>
+              </AccordionDetails>
+            </Accordion>
       ))}
+        </>
+      )}
 
       {allAnswered && !submitted && (
         <Box mt={4} textAlign="center">
