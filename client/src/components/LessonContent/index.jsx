@@ -1,16 +1,40 @@
 import { useState } from 'react';
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Paper } from '@mui/material';
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Paper, Button } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const LessonContent = ({ videoUrl, questions }) => {
-  const [selectedAlternatives, setSelectedAlternatives] = useState({});
+  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [correctAnswers, setCorrectAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
 
+  // Controla a seleção
   const handleSelect = (questionId, alternativeId) => {
-    setSelectedAlternatives((prev) => ({
-      ...prev,
-      [questionId]: alternativeId,
-    }));
+    if (!submitted) {
+      setSelectedAnswers((prev) => ({ ...prev, [questionId]: alternativeId }));
+    }
   };
+
+  // Envio e correção
+  const handleSubmit = async () => {
+    try {
+      const res = await fetch(`http://localhost:3001/api/alternatives/correct/${questions[0].lesson_id}`);
+
+      const correctData = await res.json();
+
+      // Cria um objeto com a resposta correta por pergunta
+      const correctMap = {};
+      correctData.forEach((alt) => {
+        correctMap[alt.question_id] = alt.id;
+      });
+
+      setCorrectAnswers(correctMap);
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Erro ao buscar respostas corretas:', err);
+    }
+  };
+
+  const allAnswered = questions.length > 0 && questions.every((q) => selectedAnswers[q.id]);
 
   return (
     <Box p={3}>
@@ -19,13 +43,7 @@ const LessonContent = ({ videoUrl, questions }) => {
         component="iframe"
         src={videoUrl}
         title="Vídeo da aula"
-        sx={{
-          width: '100%',
-          height: '600px',
-          border: 0,
-          borderRadius: 2,
-          mb: 4
-        }}
+        sx={{ width: '100%', height: '600px', border: 0, borderRadius: 2, mb: 4 }}
         style={{ height: '600px' }}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
@@ -41,19 +59,33 @@ const LessonContent = ({ videoUrl, questions }) => {
             <Typography mb={2}>{q.text}</Typography>
             <Box display="flex" flexDirection="column" gap={1}>
               {q.alternatives.map((alt) => {
-                const isSelected = selectedAlternatives[q.id] === alt.id;
+                const isSelected = selectedAnswers[q.id] === alt.id;
+                const isCorrect = correctAnswers[q.id] === alt.id;
+
+                const bgColor = submitted
+                  ? isCorrect
+                    ? 'lightgreen'
+                    : isSelected
+                      ? 'salmon'
+                      : '#fff'
+                  : isSelected
+                    ? '#d3e3fc'
+                    : '#fff';
+
                 return (
                   <Paper
                     key={alt.id}
+                    onClick={() => handleSelect(q.id, alt.id)}
                     sx={{
                       p: 2,
-                      cursor: 'pointer',
-                      backgroundColor: isSelected ? '#d1e7dd' : 'white', // Verde claro se selecionado
-                      '&:hover': { backgroundColor: isSelected ? '#c7dfd4' : '#f5f5f5' },
-                      border: isSelected ? '2px solid #388e3c' : '1px solid #ccc',
-                      borderRadius: 1
+                      cursor: submitted ? 'default' : 'pointer',
+                      backgroundColor: bgColor,
+                      border: '1px solid #ccc',
+                      borderRadius: 1,
+                      '&:hover': {
+                        backgroundColor: submitted ? bgColor : '#f5f5f5'
+                      }
                     }}
-                    onClick={() => handleSelect(q.id, alt.id)}
                   >
                     {alt.text}
                   </Paper>
@@ -63,6 +95,14 @@ const LessonContent = ({ videoUrl, questions }) => {
           </AccordionDetails>
         </Accordion>
       ))}
+
+      {allAnswered && !submitted && (
+        <Box mt={4} textAlign="center">
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
+            Send
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };
