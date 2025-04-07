@@ -28,66 +28,93 @@ import { Link } from 'react-router-dom';
 
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+// Define the main functional component
 const LanguagePage = () => {
+  // State to track the current step in the form wizard (0 = first step)
   const [activeStep, setActiveStep] = useState(0);
+
+  // State to store the user's input from the study plan form
   const [formData, setFormData] = useState({
-    language: "English",
-    studyDays: [],
-    dailyTime: "",
-    reward: "",
-    duration: ""
+    language: "English",   // Default selected language
+    studyDays: [],         // Array to store selected study days (e.g., ['Monday', 'Wednesday'])
+    dailyTime: "",         // Number of minutes user plans to study each day
+    reward: "",            // Reward user will give themselves after completing the plan
+    duration: ""           // Duration in months to achieve their language goal
   });
 
+  // State to check if the user has already completed the study plan form.
   const [isFormCompleted, setIsFormCompleted] = useState(() => {
-    return Boolean(localStorage.getItem("languageStudyPlan"));
+    return Boolean(localStorage.getItem("languageStudyPlan")); // It initializes by checking if there is a saved plan in localStorage.
   });
-
+  
+  // State to store the list of seasons fetched from the backend
   const [seasons, setSeasons] = useState([]);
+
+  // State to track whether the seasons are still loading
   const [loadingSeasons, setLoadingSeasons] = useState(true);
+
+  // State to store the lessons of a selected season
   const [lessons, setLessons] = useState([]);
+
+  // State to store the IDs of the lessons the user has already completed
   const [completedLessons, setCompletedLessons] = useState([]);
+
+  // State to control whether the seasons view should be shown or hidden
   const [showSeasons, setShowSeasons] = useState(true);
 
+  // useEffect runs when the component mounts or when `isFormCompleted` changes
   useEffect(() => {
+    // Function to fetch all available seasons from the API
     const fetchSeasons = async () => {
-      const data = await getAllSeasons();
-      setSeasons(data);
-      setLoadingSeasons(false);
+      const data = await getAllSeasons(); // Fetch the seasons
+      setSeasons(data);  // Store the result in the `seasons` state
+      setLoadingSeasons(false);   // Set loading flag to false
     };
 
+    // If the form has already been completed, fetch the seasons
     if (isFormCompleted) {
       fetchSeasons();
     }
-  }, [isFormCompleted]);
+  }, [isFormCompleted]);  // Re-run this effect whenever `isFormCompleted` changes
 
+  // Function that runs when the user starts a season
   const handleStartSeason = async (seasonId) => {
-  
     try {
+       // Fetch both lessons of the selected season and the user's progress in parallel
       const [lessonsData, progressRes] = await Promise.all([
-        getLessonsBySeason(seasonId),
-        fetch(`http://localhost:3001/api/progress/1`)
+        getLessonsBySeason(seasonId), // Fetch lessons for the selected season
+        fetch(`http://localhost:3001/api/progress/1`) // Fetch the user's progress (user ID is hardcoded here as 1)
       ]);
   
+       // Parse the progress response into JSON
       const progressData = await progressRes.json();
+
+       // Extract only the IDs of the completed lesson
       const completedLessonIds = progressData.map((p) => p.lesson_id);
   
+       // Update state with the lessons and completed lesson IDs
       setLessons(lessonsData);
       setCompletedLessons(completedLessonIds);
-      setShowSeasons(false);
+      setShowSeasons(false); // Hide the seasons view to show the lessons
     } catch (err) {
-      console.error("Erro ao buscar lições e progresso:", err);
+      console.error("Erro ao buscar lições e progresso:", err); // Log any errors to the console
     }
   };
+  
+  const handleNext = () => setActiveStep((prev) => prev + 1); // Advances to the next step in the form wizard
+  const handleBack = () => setActiveStep((prev) => prev - 1); // Goes back to the previous step in the form wizard
 
-  const handleNext = () => setActiveStep((prev) => prev + 1);
-  const handleBack = () => setActiveStep((prev) => prev - 1);
-
+  // Handles changes for input fields like Select or TextField
   const handleChange = (event) => {
+     // Updates the formData state with the new value for the field that triggered the change
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
+  // Handles checkbox selections for days of the week
   const handleCheckboxChange = (event) => {
     const value = event.target.name;
+
+     // If the day is already selected, remove it; otherwise, add it to the array
     setFormData((prev) => ({
       ...prev,
       studyDays: prev.studyDays.includes(value)
@@ -95,10 +122,13 @@ const LanguagePage = () => {
         : [...prev.studyDays, value],
     }));
   };
-
+  // Saves the filled form data into localStorage and sets the form as completed
   const handleSubmit = () => {
+     // Store the form data in the browser's local storage
     localStorage.setItem("languageStudyPlan", JSON.stringify(formData));
+    // Notify the user
     alert("Study plan saved!");
+    // Mark the form as completed so that the roadmap can be shown
     setIsFormCompleted(true);
   };
 
