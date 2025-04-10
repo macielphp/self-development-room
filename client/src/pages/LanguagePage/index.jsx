@@ -131,15 +131,14 @@ const LanguagePage = () => {
     // Mark the form as completed so that the roadmap can be shown
     setIsFormCompleted(true);
   };
-
+  
   return (
     <>
       <PersistentDrawer />
 
       {isFormCompleted ? (
         <Box p={4}>
-          <Typography variant="h5" mb={2}>🎯 Your Language Roadmap</Typography>
-
+          <Typography variant="h5">🎯 Your Language Roadmap</Typography>
           <Box display="flex" flexWrap="wrap" justifyContent="center">
             {loadingSeasons ? (
               <Typography>Loading seasons...</Typography>
