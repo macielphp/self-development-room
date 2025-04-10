@@ -1,12 +1,34 @@
-# React + Vite
+# Self Development Room
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Self Development Room** is a personal local website powered by a local PostgreSQL database.  
+Its main purpose is to support your **growth journey** through structured and meaningful insights about your own life.
 
-Currently, two official plugins are available:
+## 🧠 Current Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Local database (PostgreSQL)
+- Two functional pages:
+  - **Home**: Overview and quick access
+  - **Language**: Language learning roadmap with lessons, progress tracking, and interactivity
 
-## Expanding the ESLint configuration
+## 🔮 What's Its Future?
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This is just the beginning!  
+New pages will be added, each focused on a key area of self-development:
+
+- 📊 **Finance** – Track income, expenses, goals
+- 📚 **Study** – Organize study routines, review content
+- 🧭 **Career** – Plan your professional path
+- 🧘‍♂️ **Lifestyle** – Daily habits, well-being metrics
+- ✍️ **Journaling** – Reflection and mood tracking
+
+## 🎯 What's Its Mission?
+
+> To provide clear and accurate data to the user based on their **daily life** and **personal goals**,  
+> turning self-awareness into action.
+
+## 🚧 Development Notes
+
+This project is under **active development**.  
+It is running locally, not yet deployed, and used as a **personal productivity lab**.
+
+Stay tuned for more updates and modules!
