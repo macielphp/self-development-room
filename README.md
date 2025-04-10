@@ -1,5 +1,7 @@
 # Self Development Room
 
+<img src="./client/public/self-development-room.png" alt="self-development-room's banner">
+
 **Self Development Room** is a personal local website powered by a local PostgreSQL database.  
 Its main purpose is to support your **growth journey** through structured and meaningful insights about your own life.
 
