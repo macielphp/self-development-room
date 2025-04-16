@@ -24,7 +24,7 @@ import { fakeDatabase } from '../../utils/fakeDatabase/fakeDatabase';
 import Badge from '@mui/material/Badge';
 import NotificationIcon from '@mui/icons-material/Notifications';
 
-const drawerWidth = 180;
+const drawerWidth = 240;
 
 // Google data
 const userEmail = JSON.parse(localStorage.getItem('users'))?.[0]?.email || '';
