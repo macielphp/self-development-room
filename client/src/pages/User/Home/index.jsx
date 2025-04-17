@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import PersistentDrawer from './../../components/PersistentDrawer';
-import ProgressBar from '../../components/ProgressBar';
+import PersistentDrawer from './../../../components/User/PersistentDrawer';
 // import TestComponent from '../../components/TestComponent';
 
 const Home = () => {

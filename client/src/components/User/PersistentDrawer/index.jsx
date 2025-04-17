@@ -20,16 +20,10 @@ import ListItemText from '@mui/material/ListItemText';
 import LanguageIcon from '@mui/icons-material/Language'; 
 import HomeIcon from '@mui/icons-material/Home';
 import Avatar from '@mui/material/Avatar';
-import { fakeDatabase } from '../../utils/fakeDatabase/fakeDatabase';
 import Badge from '@mui/material/Badge';
 import NotificationIcon from '@mui/icons-material/Notifications';
 
 const drawerWidth = 240;
-
-// Google data
-const userEmail = JSON.parse(localStorage.getItem('users'))?.[0]?.email || '';
-const userData = userEmail ? fakeDatabase.getUserByEmail(userEmail) : null;
-const userProfilePicture = userData?.profilePicture || ''; // URL da imagem de perfil
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme }) => ({
@@ -132,8 +126,8 @@ export default function PersistentDrawerLeft() {
               </Badge>
             </IconButton>
             <Avatar 
-              alt={userData?.firstName || "User"}
-              src={userProfilePicture || "/default-avatar.png"}
+              alt={"User"}
+              src={"/default-avatar.png"}
               sx={{ width: '40px', height: '40px' }}
             />
           </Box>

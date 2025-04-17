@@ -1,13 +1,13 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import Home from "./pages/Home";
-import ResetPassword from "./pages/ResetPassword";
-import LanguagePage from './pages/LanguagePage'
+import SignIn from "./pages/User/SignIn";
+import SignUp from "./pages/User/SignUp";
+import Home from "./pages/User/Home";
+import ResetPassword from "./pages/User/ResetPassword";
+import LanguagePage from './pages/User/LanguagePage'
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import SeasonsPage from './pages/SeasonsPage'
-import LessonsPage from './pages/LessonsPage'
+import SeasonsPage from './pages/User/SeasonsPage'
+import LessonsPage from './pages/User/LessonsPage'
 
 const CLIENT_ID = import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
 
