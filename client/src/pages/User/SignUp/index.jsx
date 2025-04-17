@@ -20,7 +20,7 @@
 
 
 
-// const SignUp = () => {
+const SignUp = () => {
 //     const navigate = useNavigate();
 //     const [openSnackbar, setOpenSnackbar] = useState(false);
 //     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -77,7 +77,8 @@
 //         }
 //     }
 
-//     return (
+    return (
+        <></>
 //     <Box display='flex' height= '100vh' width='100%' fontSize='15px'>
 //         <Box flex={1} bgcolor='#f0f0f0' display='flex' alignItems='center' justifyContent='center'>
 //             <Box display='flex' flexDirection='column' width='70%' maxWidth='550px' height='770px' justifyContent='center' gap='10px'>
@@ -191,7 +192,7 @@
 //             </Alert>
 //         </Snackbar>
 //     </Box>
-//   )
-// }
+    )
+}
 
-// export default SignUp
+export default SignUp

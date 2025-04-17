@@ -6,7 +6,7 @@
 // import { GoogleLogin } from '@react-oauth/google';
 // import { jwtDecode } from "jwt-decode";
 
-// const SignIn = () => {
+const SignIn = () => {
 //     const navigate = useNavigate();
 //     const [email, setEmail]  = useState('');
 //     const [password, setPassword] = useState('');
@@ -44,7 +44,9 @@
 //         };
 //     };
 
-//     return (
+     return (
+        <>
+        </>
 //     <Box display='flex' height='100vh' width='100%' fontSize="15px">
 //         {/* Left Box */}
 //         <Box flex={1} bgcolor='#f0f0f0' display='flex' alignItems='center' justifyContent='center' >
@@ -114,7 +116,7 @@
 //             anchorOrigin = {{ vertical: 'top', horizontal: 'center' }}    
 //         />
 //     </Box>
-//     )
-// }
+    )
+}
 
-// export default SignIn
+export default SignIn
