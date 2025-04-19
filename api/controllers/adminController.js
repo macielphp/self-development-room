@@ -35,11 +35,3 @@ export const loginAdmin = async (req, res) => {
         res.status(500).json({ message: 'Inner error server' });
     }
 };
-export const getAllAdmins = async (req, res) => {
-    try {
-        const result = await pool.query('SELECT id, name, email FROM admins');
-        res.json(result.rows);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
-};
