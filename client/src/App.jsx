@@ -36,7 +36,6 @@ const App = () => {
 
           {/* Login admin */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          
 
           {/* rotas empilhadas do admin */}
           <Route path="/admin" element={<AdminLayout />}>
