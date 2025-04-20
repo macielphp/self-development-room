@@ -1,9 +1,8 @@
 import React from 'react'
+import { Outlet } from 'react-router-dom'
 // Local Component
-import DrawerLayout from '../../components/Admin/DrawerLayout'
+import DrawerLayout from '../components/Admin/DrawerLayout'
 // Mui Components
-import { Typography, Card, CardContent } from '@mui/material';
-// Icons
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LanguageIcon from '@mui/icons-material/Language';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -24,23 +23,14 @@ const navItems = [
   { text: 'Admins', path: '/admin/admins', icon: <AdminPanelSettingsIcon /> }
 ];
 
-export default function Dashboard(props) {
+export default function AdminLayout(props) {
   return (
     <DrawerLayout
       window={props.window}
       title="Admin Dashboard"
-      navigationItems={navItems}>
-          <Typography variant="h4" gutterBottom>
-        Welcome to Admin Dashboard
-      </Typography>
-      <Card sx={{ mb: 2 }}>
-        <CardContent>
-          <Typography variant="body1">
-            Use the menu to navigate between modules and manage your content.
-          </Typography>
-        </CardContent>
-      </Card>
-      {/* Outros cards ou componentes de overview podem vir aqui */}
+      navigationItems={navItems}
+    >
+        <Outlet />
     </DrawerLayout>
   )
 }

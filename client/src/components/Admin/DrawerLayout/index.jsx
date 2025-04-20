@@ -1,5 +1,9 @@
 import React from 'react';
+// Router
+import { useNavigate } from 'react-router-dom';
+// Mui components
 import { Box, CssBaseline, AppBar, Toolbar, IconButton, Typography, Drawer, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+// Mui icons
 import MenuIcon from '@mui/icons-material/Menu';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import PropTypes from 'prop-types';
@@ -7,6 +11,8 @@ import PropTypes from 'prop-types';
 const drawerWidth = 240;
 
 export default function DrawerLayout({ window, title, navigationItems, children }) {
+    const navigate = useNavigate();
+
     const [mobileOpen, setMobileOpen] = React.useState(false);
     
     const handleDrawerToggle = () => {
@@ -20,7 +26,7 @@ export default function DrawerLayout({ window, title, navigationItems, children 
             <List>
                 {navigationItems.map(({ text, icon, path }) => (
                     <ListItem key={text} disablePadding>
-                        <ListItemButton onClick={() => window.location.href = path}>
+                        <ListItemButton onClick={() => navigate(path)}>
                             <ListItemIcon>
                                 { icon || <InboxIcon /> }
                             </ListItemIcon>
