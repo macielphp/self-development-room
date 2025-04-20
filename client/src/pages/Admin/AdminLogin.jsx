@@ -21,7 +21,7 @@ const AdminLogin = () => {
         try{
             const res = await axios.post('http://localhost:3001/admin/login', form);
             localStorage.setItem('adminToken', res.data.token);
-            navigate('/admin/dasboard');
+            navigate('/admin/dashboard');
         } catch{
             setError('Invalid email/password')
         }
