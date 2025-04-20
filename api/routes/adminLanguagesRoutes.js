@@ -1,4 +1,5 @@
 import express from 'express';
+import authAdmin from '../middleware/authAdmin.js';
 import {
     getAllLanguages, 
     createLanguage, 
@@ -8,9 +9,9 @@ import {
 
 const router = express.Router();
 
-router.get('/', getAllLanguages);
-router.post('/', createLanguage);
-router.put('/', updateLanguage);
-router.delete('/', deleteLanguage)
+router.get('/', authAdmin ,getAllLanguages);
+router.post('/', authAdmin, createLanguage);
+router.put('/', authAdmin, updateLanguage);
+router.delete('/',authAdmin, deleteLanguage)
 
 export default router;
