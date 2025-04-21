@@ -10,10 +10,10 @@ import {
 
 const router = express.Router();
 
-router.get('/', getAllSeason);
-router.get('/:id', getSeasonById);
-router.post('/', createSeason);
-router.put('/', updateSeason);
-router.delete('/', deleteSeason);
+router.get('/', authAdmin, getAllSeason);
+router.get('/:id', authAdmin, getSeasonById);
+router.post('/', authAdmin, createSeason);
+router.put('/', authAdmin, updateSeason);
+router.delete('/', authAdmin, deleteSeason);
 
 export default router;
