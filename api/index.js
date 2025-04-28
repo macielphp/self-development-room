@@ -1,11 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import adminRoutes from './routes/adminRoutes.js';
-import adminLangaugesRoutes from './routes/adminLanguagesRoutes.js'
-dotenv.config();
-import adminSeasonsRoutes from './routes/adminSeasonsRoutes.js'
 import adminAuthRoutes from './routes/adminAuthRoutes.js'
+import adminLangaugesRoutes from './routes/adminLanguagesRoutes.js'
+import adminSeasonsRoutes from './routes/adminSeasonsRoutes.js'
+import authAdmin from './middleware/authAdmin.js'; // Middleware de autenticação para proteger o painel
+
+
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -13,9 +15,12 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Rota de autenticação do admin
 app.use('/admin', adminAuthRoutes)
-app.use('/admin/languages', adminLangaugesRoutes);
-app.use('/admin/seasons', adminSeasonsRoutes)
+
+// Rotas do painel admin
+app.use('/admin/languages', authAdmin, adminLangaugesRoutes);
+app.use('/admin/seasons', authAdmin, adminSeasonsRoutes)
 
 app.listen(port, () => {
     console.log(`Server is on. port ${port}`);
