@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, TextField, Button, MenuItem,
-  Snackbar, IconButton
+  Snackbar, IconButton, Menu
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { Edit, Delete } from '@mui/icons-material';
@@ -19,6 +19,8 @@ const AdminSeasons = () => {
   const [editMode, setEditMode] = useState(null);
   const [editedTitle, setEditedTitle] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedLanguageFilter, setSelectedLanguageFilter] = useState('All');
 
   const fetchSeasons = async () => {
     const data = await getAllSeasons();
@@ -106,12 +108,20 @@ const AdminSeasons = () => {
           <TableHead>
             <TableRow>
               <TableCell>Title</TableCell>
-              <TableCell>Language</TableCell>
+              <TableCell
+                onClick={(e) => setAnchorEl(e.currentTarget)}
+                style={{ cursor: 'pointer', fontWeight: 'bold'}}
+              >Language ▼</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {seasons.map((season) => (
+            {seasons
+            .filter((season) => 
+              selectedLanguageFilter === 'All' || 
+              season.language_name === selectedLanguageFilter
+            )
+            .map((season) => (
               <TableRow key={season.id}>
                 <TableCell>
                   {editMode === season.id ? (
@@ -149,6 +159,32 @@ const AdminSeasons = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+      >
+        <MenuItem
+          onClick={() => {
+            setSelectedLanguageFilter('All');
+            setAnchorEl(null);
+          }}
+        >
+            All
+        </MenuItem>
+        {languages.map((lang) => (
+          <MenuItem 
+            key = {lang.id}
+            onClick={() => {
+              setSelectedLanguageFilter(lang.name);
+              setAnchorEl(null);
+            }}
+          >
+            {lang.name}
+          </MenuItem>
+        ))}
+      </Menu>
 
       <Snackbar
         open={snackbar.open}
