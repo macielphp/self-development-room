@@ -17,6 +17,10 @@ import AdminLayout from './layouts/AdminLayout';
   import AdminDashboard from './pages/Admin/AdminDashboard';
   import AdminLanguages from './pages/Admin/AdminLanguages'
   import AdminSeasons from "./pages/Admin/AdminSeasons";
+  import AdminLessons from "./pages/Admin/AdminLessons";
+  import AdminQuestions from "./pages/Admin/AdminQuestions";
+  import AdminUsers from "./pages/Admin/AdminUsers";
+  import AdminAdmins from "./pages/Admin/AdminAdmins";
 
 const CLIENT_ID = import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
 
@@ -43,6 +47,11 @@ const App = () => {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path='languages' element={<AdminLanguages />}/>
             <Route path='seasons' element={<AdminSeasons />}/>
+            <Route path='lessons' element={<AdminLessons />}/>
+            <Route path='questions' element={<AdminQuestions />}/>
+            <Route path='questions' element={<AdminQuestions />}/>
+            <Route path='users' element={<AdminUsers />}/>
+            <Route path='admins' element={<AdminAdmins />}/>
           </Route>
 
           

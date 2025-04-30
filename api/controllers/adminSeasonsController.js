@@ -2,21 +2,23 @@ import { pool } from '../db/db.js'
 
 // 📋 Buscar todas as temporadas com o nome do idioma
 const getAllSeason = async (req, res) => {
-    try{
+    try {
         const result = await pool.query(`
-        SELECT 
-            seasons.id,
-            seasons.title,
-            languages.name AS language_name
-        FROM seasons
-        JOIN languages ON seasons.language_id = languages.id
-        ORDER BY seasons.id;    
+            SELECT 
+                seasons.id,
+                seasons.title,
+                seasons.language_id, -- ADICIONE ISSO
+                languages.name AS language_name
+            FROM seasons
+            JOIN languages ON seasons.language_id = languages.id
+            ORDER BY seasons.id;
         `);
         res.json(result.rows);
-    } catch(err){
-        res.status(500).json({ error:err.message })
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-}
+};
+
 
 // 🔎 Buscar uma temporada específica
 const getSeasonById = async (req, res) => {

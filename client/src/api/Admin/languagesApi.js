@@ -1,6 +1,6 @@
 import api from '../axiosInstance';
 
-const API_URL = 'http://localhost:3001/admin/languages';
+const API_URL = '/admin/languages';
 
 export const getAllLanguages = async () => {
   const response = await api.get(API_URL);

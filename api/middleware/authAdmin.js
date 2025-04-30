@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const authAdmin = (req, res, next) => {
+  
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {

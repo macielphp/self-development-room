@@ -76,13 +76,16 @@ export const getAllLessons = async (req, res) => {
   // 📝 Update Lesson
   export const updateLesson = async (req, res) => {
     try {
-      const { id, title, lesson_content, lesson_order } = req.body;
+      const { id, language_id, title, lesson_content, lesson_order } = req.body;
   
       await pool.query(`
         UPDATE lessons
         SET title = $1, lesson_content = $2, lesson_order = $3
         WHERE id = $4
-      `, [title, lesson_content, lesson_order, id]);
+          AND season_id IN (
+            SELECT id FROM seasons WHERE language_id = $5
+          )
+      `, [title, lesson_content, lesson_order, id, language_id]);
   
       res.json({ message: 'Lesson updated successfully' });
     } catch (error) {
