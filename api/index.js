@@ -6,7 +6,7 @@ import adminLangaugesRoutes from './routes/adminLanguagesRoutes.js'
 import adminSeasonsRoutes from './routes/adminSeasonsRoutes.js'
 import authAdmin from './middleware/authAdmin.js'; // Middleware de autenticação para proteger o painel
 import adminLessonRoutes from './routes/adminLessonsRoutes.js'
-
+import adminQuestionsRoutes from './routes/adminQuestionsRoutes.js'
 
 dotenv.config();
 
@@ -23,6 +23,7 @@ app.use('/admin', adminAuthRoutes)
 app.use('/admin/languages', authAdmin, adminLangaugesRoutes);
 app.use('/admin/seasons', authAdmin, adminSeasonsRoutes);
 app.use('/admin/lessons', authAdmin, adminLessonRoutes);
+app.use('/admin/questions', authAdmin, adminQuestionsRoutes);
 
 app.listen(port, () => {
     console.log(`Server is on. port ${port}`);
