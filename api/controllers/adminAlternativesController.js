@@ -1,4 +1,4 @@
-import { pool } from '../db.js';
+import { pool } from '../db/db.js';
 
 export const getAlternativesByQuestion = async (req, res) => {
     const { questionId } = req.params;
@@ -15,6 +15,25 @@ export const getAlternativesByQuestion = async (req, res) => {
     }
   };
 
+export const getLessonBySeason = async (req, res) => {
+  try {
+    const { seasonId } = req.params;
+    const { rows } = await pool.query(`
+      SELECT 
+        id,
+        title,
+        lesson_order
+      FROM lessons
+      WHERE season_id = $1
+      ORDER BY lesson_order;
+    `, [seasonId]);
+    res.json(rows);   
+  } catch(error) {
+    console.error('Error fetching lessons:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 export const createAlternatives = async (req, res) => {
     const { question_id, alternatives } = req.body; // [{ alternative, correct }]
     try {
@@ -23,8 +42,7 @@ export const createAlternatives = async (req, res) => {
   
       const result = await pool.query(`
         INSERT INTO alternatives (question_id, alternative, correct)
-        VALUES ${insertValues}
-        RETURNING *;
+        VALUES ${insertValues};
       `, params);
   
       res.status(201).json(result.rows);
@@ -46,7 +64,6 @@ export const setCorrectAlternative = async (req, res) => {
           ELSE FALSE
         END
         WHERE question_id = (SELECT question_id FROM target)
-        RETURNING *;
       `, [id]);
       res.json(result.rows);
     } catch (error) {

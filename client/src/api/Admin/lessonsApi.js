@@ -23,3 +23,8 @@ export const updateLesson = async (id, language_id, title, lesson_content, lesso
 export const deleteLesson = async (id) => {
     await api.delete(API_URL, {data: { id }});
 };
+
+export const getLessonsBySeason = async (seasonId) => {
+    const res = await api.get(`${API_URL}/season/${seasonId}`);
+    return res.data;
+};

@@ -73,6 +73,27 @@ export const getAllLessons = async (req, res) => {
     }
   };
   
+  export const getLessonsBySeason = async(req, res) => {
+    try {
+      const { seasonId } = req.params;
+
+      const { rows } = await pool.query(`
+        SELECT
+          id, 
+          title,
+          lesson_order,
+        FROM lessons
+        WHERE season_id = $1
+        ORDER BY lesson_order
+      `, [seasonId]);
+
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching lessons by season:', error);
+      res.status(500).json({ error: 'Internal error' });
+    }
+  };
+
   // 📝 Update Lesson
   export const updateLesson = async (req, res) => {
     try {
