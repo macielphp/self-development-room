@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import {
   Box, Typography, Button, Checkbox, Dialog, DialogTitle, DialogContent
 } from "@mui/material";
-import { getAlternativesByQuestion, updateAlternative, deleteAlternative } from "../../api/Admin/alternativesApi";
-import AlternativeForm from "./AlternativeForm";
+import { getAlternativesByQuestion, updateAlternative, deleteAlternative } from "./../../../api/Admin/alternativesApi";
+import AlternativeForm from "../../Admin/AlternativeForm";
 import { createAlternative } from "../../../api/Admin/alternativesApi";
 
 

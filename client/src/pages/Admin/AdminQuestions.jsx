@@ -41,20 +41,22 @@ export default function AdminQuestions() {
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
   const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-    getAllSeasons().then(res => setSeasons(res.data));
-  }, []);
+  useEffect(() => {
+    getAllSeasons().then(data => {
+      setSeasons(data);
+    });
+ }, []);
 
   useEffect(() => {
     if (selectedSeason) {
-      getLessonsBySeason(selectedSeason).then(res => setLessons(res.data));
+      console.log("Selected season:", selectedSeason);
+      getLessonsBySeason(selectedSeason).then(data => setLessons(data));
     } else {
       setLessons([]);
       setSelectedLesson("");
     }
   }, [selectedSeason]);
-
-  useEffect(() => {
+    useEffect(() => {
     if (selectedLesson) {
       fetchQuestions();
     } else {
@@ -107,19 +109,21 @@ export default function AdminQuestions() {
         <FormControl fullWidth>
           <InputLabel>Season</InputLabel>
           <Select value={selectedSeason} onChange={e => setSelectedSeason(e.target.value)}>
-            {seasons.map(s => <MenuItem key={s.id} value={s.id}>{s.title}</MenuItem>)}
+            {Array.isArray(seasons) && seasons.map(s => 
+              <MenuItem key={s.id} value={s.id}>{s.title}</MenuItem>
+            )}
           </Select>
         </FormControl> 
 
         <FormControl fullWidth disabled={!selectedSeason}>
-          <InputLabel>Lição</InputLabel>
+          <InputLabel>Lesson</InputLabel>
           <Select value={selectedLesson} onChange={e => setSelectedLesson(e.target.value)}>
-            {lessons.map(l => <MenuItem key={l.id} value={l.id}>{l.title}</MenuItem>)}
+            {Array.isArray(lessons) && lessons.map(l => <MenuItem key={l.id} value={l.id}>{l.title}</MenuItem>)}
           </Select>
         </FormControl>
 
         <Button variant="contained" onClick={() => setOpenForm(true)} disabled={!selectedLesson}>
-          Nova Pergunta
+          New question
         </Button>
       </Box>
 
@@ -133,7 +137,11 @@ export default function AdminQuestions() {
               <Button size="small" onClick={() => handleOpenAlternatives(q.id)} color="secondary">Alternativas</Button>
             </Box>
           </Box>
-        ))}
+        ))
+       : (
+          <Typography>No question was found.</Typography>
+        )
+      )}
 
       {/* Formulário de Pergunta */}
       <Dialog open={openForm} onClose={() => setOpenForm(false)}>

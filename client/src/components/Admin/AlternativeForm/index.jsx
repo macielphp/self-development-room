@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { TextField, Checkbox, FormControlLabel, Button, Box } from "@mui/material";
-import { createAlternative } from "../../api/Admin/alternativesApi";
+import { createAlternative } from "../../../api/Admin/alternativesApi";
 
 export default function AlternativeForm({ initialData = null, questionId, onSave, onCancel }) {
   const [alternative, setAlternative] = useState("");

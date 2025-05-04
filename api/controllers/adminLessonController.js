@@ -81,7 +81,7 @@ export const getAllLessons = async (req, res) => {
         SELECT
           id, 
           title,
-          lesson_order,
+          lesson_order
         FROM lessons
         WHERE season_id = $1
         ORDER BY lesson_order
