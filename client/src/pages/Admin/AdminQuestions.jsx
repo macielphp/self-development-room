@@ -27,6 +27,7 @@ import {
   updateQuestion,
   deleteQuestion
 } from "../../api/Admin/questionsApi";
+import { getAlternativesByQuestion } from "../../api/Admin/alternativesApi";
 
 export default function AdminQuestions() {
   const [seasons, setSeasons] = useState([]);
@@ -40,6 +41,8 @@ export default function AdminQuestions() {
   const [selectedQuestionId, setSelectedQuestionId] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
   const [loading, setLoading] = useState(false);
+  const [alternativesMap, setAlternativesMap] = useState([]);
+
 
   useEffect(() => {
     getAllSeasons().then(data => {
@@ -64,12 +67,27 @@ export default function AdminQuestions() {
     }
   }, [selectedLesson]);
 
-  const fetchQuestions = () => {
+  const fetchQuestions = async () => {
     setLoading(true);
-    getQuestionsByLesson(selectedLesson)
-      .then(res => setQuestions(res.data))
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
+    try {
+      const res = await getQuestionsByLesson(selectedLesson);
+      const questions = res.data;
+      setQuestions(questions);
+
+      // Fetch alternatives for each question
+      const alternativesObj = {};
+      await Promise.all(
+        questions.map(async (q) => {
+          const altRes = await getAlternativesByQuestion(q.id);
+          alternativesObj[q.id] = altRes.data;
+        })
+      );
+      setAlternativesMap(alternativesObj)
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEdit = (question) => {
@@ -131,12 +149,24 @@ export default function AdminQuestions() {
 
       {loading ? <CircularProgress /> : (
         Array.isArray(questions) && questions.length > 0 ? questions.map(q => (
-          <Box key={q.id} display="flex" justifyContent="space-between" alignItems="center" borderBottom="1px solid #ccc" py={1}>
-            <Typography>{q.question}</Typography>
-            <Box display="flex" gap={1}>
-              <Button size="small" onClick={() => handleEdit(q)}>Editar</Button>
-              <Button size="small" onClick={() => handleDelete(q.id)} color="error">Excluir</Button>
-              <Button size="small" onClick={() => handleOpenAlternatives(q.id)} color="secondary">Alternativas</Button>
+          <Box key={q.id} border="1px solid #ccc" borderRadius={2} p={2} mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Typography fontWeight="bold">{q.question}</Typography>
+              <Box display="flex" gap={1}>
+                <Button size="small" onClick={() => handleEdit(q)}>Editar</Button>
+                <Button size="small" onClick={() => handleDelete(q.id)} color="error">Excluir</Button>
+                <Button size="small" onClick={() => handleOpenAlternatives(q.id)} color="secondary">Drawer</Button>
+              </Box>
+            </Box>
+
+            <Box mt={1}>
+              {(alternativesMap[q.id] || []).map((alt) => (
+                <Box key={alt.id} display="flex" alignItems="center" gap={1} ml={2}>
+                  <Typography variant="body2" color={alt.correct ? "green" : "text.secondary"}>
+                    {alt.correct ? "✅" : "❌"} {alt.alternative}
+                  </Typography>
+                </Box>
+              ))}
             </Box>
           </Box>
         ))

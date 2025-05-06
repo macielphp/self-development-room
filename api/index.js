@@ -24,6 +24,7 @@ app.use('/admin/languages', authAdmin, adminLangaugesRoutes);
 app.use('/admin/seasons', authAdmin, adminSeasonsRoutes);
 app.use('/admin/lessons', authAdmin, adminLessonRoutes);
 app.use('/admin/questions', authAdmin, adminQuestionsRoutes);
+app.use('/admin/alternatives', authAdmin, adminQuestionsRoutes); // Alternativas também estão sob o painel de perguntas
 
 app.listen(port, () => {
     console.log(`Server is on. port ${port}`);
