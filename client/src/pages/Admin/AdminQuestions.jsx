@@ -88,6 +88,8 @@ export default function AdminQuestions() {
       await updateQuestion(editingQuestion.id, data);
       setSnackbar({ open: true, message: "Pergunta atualizada", severity: "success" });
     } else {
+      console.log("Creating question with data:", data);
+      console.log("Selected lesson:", selectedLesson);
       await createQuestion(selectedLesson, data);
       setSnackbar({ open: true, message: "Pergunta criada", severity: "success" });
     }
@@ -100,7 +102,7 @@ export default function AdminQuestions() {
     setSelectedQuestionId(questionId);
     setOpenDrawer(true);
   };
-
+  
   return (
     <Box p={3}>
       <Typography variant="h4" gutterBottom>Gerenciar Perguntas</Typography>
@@ -144,8 +146,9 @@ export default function AdminQuestions() {
       )}
 
       {/* Formulário de Pergunta */}
-      <Dialog open={openForm} onClose={() => setOpenForm(false)}>
-        <DialogTitle>{editingQuestion ? "Editar Pergunta" : "Nova Pergunta"}</DialogTitle>
+      <Dialog open={openForm} onClose={() => setOpenForm(false)} fullWidth maxWidth="sm">
+        <DialogTitle>{editingQuestion ? "Edit question" : "New question"}</DialogTitle>
+        
         <DialogContent>
           <QuestionForm
             initialData={editingQuestion}

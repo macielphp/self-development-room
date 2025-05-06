@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import {
   Box, Typography, Button, Checkbox, Dialog, DialogTitle, DialogContent
 } from "@mui/material";
 import { getAlternativesByQuestion, updateAlternative, deleteAlternative } from "./../../../api/Admin/alternativesApi";
 import AlternativeForm from "../../Admin/AlternativeForm";
 import { createAlternative } from "../../../api/Admin/alternativesApi";
+import { markAsCorrect } from '../../../api/Admin/alternativesApi';
 
 
 export default function AlternativeList({ questionId }) {
@@ -31,6 +32,10 @@ export default function AlternativeList({ questionId }) {
   };
 
   const handleSave = async (data) => {
+    if(data.correct) {
+      await markAsCorrect(editingAlt?.id || 'temp');
+    }
+    
     if (editingAlt) {
       await updateAlternative(editingAlt.id, data);
     } else {
@@ -43,7 +48,7 @@ export default function AlternativeList({ questionId }) {
 
   const handleMarkAsCorrect = async (id) => {
     // (1) Atualize a alternativa como correta
-    await updateAlternative(id, { correct: true });
+    await markAsCorrect(id);
   
     // (2) Atualize as demais como incorretas
     const others = alternatives.filter(alt => alt.id !== id && alt.correct);

@@ -62,7 +62,7 @@ export const deleteQuestion = async(req, res) => {
     const { id } = req.params;
     try{
         await pool.query(`DELETE FROM questions WHERE id = $1;`, [id]);
-        res.status(204);
+        res.sendStatus(204);
     } catch(error) {
         res.status(500).json({ error: 'Erro ao deletar pergunta.' });
     }
