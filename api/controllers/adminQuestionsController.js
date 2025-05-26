@@ -16,7 +16,7 @@ export const getQuestionsByLesson = async(req, res) => {
     }
 }
 
-export const getQuestionsById = async(req, res) => {
+export const getQuestionById = async(req, res) => {
     const { id } = req.params;
     try{
         const result = await pool.query(`
@@ -37,10 +37,16 @@ export const createQuestion = async(req, res) => {
         const result = await pool.query(`
             INSERT INTO questions (lesson_id, question)
             VALUES ($1, $2)
+            RETURNING id, lesson_id, question
         `, [lesson_id, question])
+
+        if(!result.rows[0]) {
+            throw new Error('Question creation failed');
+        }
         res.status(201).json(result.rows[0]);
     } catch(error){
-        res.status(500).json({ error: 'Erro ao criar pergunta.' })
+        console.error('Error in createQuestion:', error)
+        res.status(500).json({ error: 'Error in creating question.' })
     }
 }
 
@@ -60,11 +66,18 @@ export const updateQuestion = async(req, res) => {
 
 export const deleteQuestion = async(req, res) => {
     const { id } = req.params;
+    const client = await pool.connect();
     try{
-        await pool.query(`DELETE FROM questions WHERE id = $1;`, [id]);
+        await client.query('BEGIN');
+        await client.query(`DELETE FROM questions WHERE id = $1;`, [id]);
+        await client.query('COMMIT');
         res.sendStatus(204);
     } catch(error) {
+        await client.query('COMMIT');
+        console.error('Error deleting question:', error);
         res.status(500).json({ error: 'Erro ao deletar pergunta.' });
+    } finally {
+        client.release();
     }
 };
 

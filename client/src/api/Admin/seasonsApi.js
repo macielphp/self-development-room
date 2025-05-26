@@ -7,6 +7,11 @@ export const getAllSeasons = async () => {
     return res.data;
 };
 
+export const getSeasonsByLanguageId = async (languageId) => {
+    const res = await api.get(`${API_URL}by-language/${languageId}`);
+    return res.data;
+};
+
 export const createSeason = async (title, language_id) => {
     await api.post(API_URL, { title, language_id });
 };

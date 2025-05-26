@@ -21,24 +21,26 @@ const getAllSeason = async (req, res) => {
 
 
 // 🔎 Buscar uma temporada específica
-const getSeasonById = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const result = await pool.query(`
-            SELECT 
-                seasons.id,
-                seasons.title,
-                languages.name AS language_name
-            FROM seasons
-            JOIN languages ON seasons.language_id = languages.id
-            WHERE seasons.id = $1;
-        
-        `, [id]);
-        res.json(result.rows[0])
-    } catch(err){
-        res.status(500).json({ error: err.message });
-    }
+const getSeasonsByLanguageId = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(`
+      SELECT 
+        seasons.id,
+        seasons.title,
+        seasons.language_id,
+        languages.name AS language_name
+      FROM seasons
+      JOIN languages ON seasons.language_id = languages.id
+      WHERE languages.id = $1
+    `, [id]);
+
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
+
 
 // ✅ Criar uma nova temporada
 const createSeason = async (req, res) => {
@@ -82,7 +84,7 @@ try {
 
 export {
     getAllSeason,
-    getSeasonById,
+    getSeasonsByLanguageId,
     createSeason,
     updateSeason,
     deleteSeason

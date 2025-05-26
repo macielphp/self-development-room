@@ -49,7 +49,6 @@ const App = () => {
             <Route path='seasons' element={<AdminSeasons />}/>
             <Route path='lessons' element={<AdminLessons />}/>
             <Route path='questions' element={<AdminQuestions />}/>
-            <Route path='questions' element={<AdminQuestions />}/>
             <Route path='users' element={<AdminUsers />}/>
             <Route path='admins' element={<AdminAdmins />}/>
           </Route>

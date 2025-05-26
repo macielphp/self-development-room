@@ -1,7 +1,28 @@
 import api from "../axiosInstance";
 
-export const getAlternativesByQuestion = (questionId) => api.get(`/admin/alternatives/question/${questionId}`);
-export const createAlternative = (questionId, data) => api.post(`/admin/alternatives`, { question_id: questionId, ...data });
-export const updateAlternative = (id, data) => api.put(`/admin/alternatives/${id}`, data);
-export const deleteAlternative = (id) => api.delete(`/admin/alternatives/${id}`);
-export const markAsCorrect = (id) => api.put(`/admin/alternatives/${id}`, { correct: true });
+const API_URL = "/admin/alternatives";
+
+export const getAlternativesByQuestion = async (questionId) => {
+  const response = await api.get(`${API_URL}/question/${questionId}`);
+  return response.data;
+};
+
+export const createAlternatives = async (questionId, data) => {
+  const response = await api.post(API_URL, { question_id: questionId, ...data });
+  return response.data;
+};
+
+export const updateAlternative = async (id, data) => {
+  const response = await api.put(`${API_URL}/${id}`, data);
+  return response.data;
+};
+
+export const deleteAlternative = async (id) => {
+  const response = await api.delete(`${API_URL}/${id}`);
+  return response.data;
+};
+
+export const markAsCorrect = async (id) => {
+  const response = await api.put(`${API_URL}/${id}/correct`);
+  return response.data;
+};

@@ -8,7 +8,6 @@ import LanguageIcon from '@mui/icons-material/Language';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import QuizIcon from '@mui/icons-material/Quiz';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PeopleIcon from '@mui/icons-material/People';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
@@ -18,7 +17,6 @@ const navItems = [
   { text: 'Seasons', path: '/admin/seasons', icon: <CalendarMonthIcon /> },
   { text: 'Lessons', path: '/admin/lessons', icon: <MenuBookIcon /> },
   { text: 'Questions', path: '/admin/questions', icon: <QuizIcon /> },
-  { text: 'Alternatives', path: '/admin/alternatives', icon: <CheckCircleIcon /> },
   { text: 'Users', path: '/admin/users', icon: <PeopleIcon /> },
   { text: 'Admins', path: '/admin/admins', icon: <AdminPanelSettingsIcon /> }
 ];

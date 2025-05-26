@@ -1,213 +1,225 @@
-import { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Snackbar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Drawer,
-  CircularProgress
-} from "@mui/material";
-import MuiAlert from "@mui/material/Alert";
-import QuestionForm from "../../components/Admin/QuestionForm";
-import AlternativeList from "../../components/Admin/AlternativeList";
-import {
-  getAllSeasons,
-} from "../../api/Admin/seasonsApi";
-import { getLessonsBySeason } from "../../api/Admin/lessonsApi";
-import {
-  getQuestionsByLesson,
-  createQuestion,
-  updateQuestion,
-  deleteQuestion
-} from "../../api/Admin/questionsApi";
-import { getAlternativesByQuestion } from "../../api/Admin/alternativesApi";
+import React,{ useState, useEffect } from 'react'
+import { Box, Typography, IconButton, Divider, Button, Snackbar, Menu, MenuItem } from '@mui/material'
+import MuiAlert from '@mui/material/Alert';
+import CustomFilter from '../../components/Admin/CustomFilter';
+import { useQuestionsData } from '../../hooks/Admin/useQuestionsData'
+import { updateQuestion, deleteQuestion, createQuestion } from '../../api/Admin/questionsApi';
+import { createAlternatives } from '../../api/Admin/alternativesApi';
+import QuestionCard from '../../components/Admin/QuestionCard';
+import NewQuestionDialog from '../../components/Admin/NewQuestionDialog';
 
-export default function AdminQuestions() {
-  const [seasons, setSeasons] = useState([]);
-  const [lessons, setLessons] = useState([]);
-  const [questions, setQuestions] = useState([]);
-  const [selectedSeason, setSelectedSeason] = useState("");
-  const [selectedLesson, setSelectedLesson] = useState("");
-  const [openForm, setOpenForm] = useState(false);
-  const [editingQuestion, setEditingQuestion] = useState(null);
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [selectedQuestionId, setSelectedQuestionId] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
-  const [loading, setLoading] = useState(false);
-  const [alternativesMap, setAlternativesMap] = useState([]);
+const AdminQuestions = () => {
+  const { 
+    languages, seasons, lessons, questions, fetchLanguages, fetchSeasons, fetchLessons, fetchQuestions, filters, setFilters, setQuestions
+  } = useQuestionsData();
 
+  const [selectedLanguageId, setSelectedLanguageId] = useState('');
+  const [selectedSeasonId, setSelectedSeasonId] = useState('');
+  const [selectedLessonId, setSelectedLessonId] = useState('');
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info'})
+  const [editMode, setEditMode] = useState(null);
+  const [editedQuestion, setEditedQuestion] = useState({})
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  useEffect(() => {
-    getAllSeasons().then(data => {
-      setSeasons(data);
-    });
- }, []);
-
-  useEffect(() => {
-    if (selectedSeason) {
-      console.log("Selected season:", selectedSeason);
-      getLessonsBySeason(selectedSeason).then(data => setLessons(data));
-    } else {
-      setLessons([]);
-      setSelectedLesson("");
-    }
-  }, [selectedSeason]);
-    useEffect(() => {
-    if (selectedLesson) {
-      fetchQuestions();
-    } else {
-      setQuestions([]);
-    }
-  }, [selectedLesson]);
-
-  const fetchQuestions = async () => {
-    setLoading(true);
+  const handleCreateQuestion = async (data) => {
     try {
-      const res = await getQuestionsByLesson(selectedLesson);
-      const questions = res.data;
-      setQuestions(questions);
+      const questionResponse = await createQuestion(data.lessonId,{
+        question: data.question
+      });
 
-      // Fetch alternatives for each question
-      const alternativesObj = {};
-      await Promise.all(
-        questions.map(async (q) => {
-          const altRes = await getAlternativesByQuestion(q.id);
-          alternativesObj[q.id] = altRes.data;
-        })
-      );
-      setAlternativesMap(alternativesObj)
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+      console.log('Question created:',questionResponse)
+
+      if (!questionResponse || !questionResponse.id) {
+        throw new Error('Question creation failed - no ID returned')
+      }
+
+      const alternativesData = {
+        alternatives: data.alternatives.map((alt, index) => ({
+          alternative: alt,
+          correct: index === data.correctAlternativeIndex
+        })),
+      };
+
+      await createAlternatives(questionResponse.id, alternativesData)
+      await fetchQuestions(data.lessonId);
+      showSnackbar('Question created successfully!', 'success');
+    } catch (error) {
+      console.error('Error creating question:', error);
+      showSnackbar('Error creating question', 'error');
     }
-  };
+  }
+  const [newQuestion, setNewQuestion] = useState({
+    question: '',
+    alternatives: [{
+      alternative:'',
+      correct: false
+    }]
+  })
 
-  const handleEdit = (question) => {
-    setEditingQuestion(question);
-    setOpenForm(true);
-  };
-
-  const handleDelete = async (id) => {
-    await deleteQuestion(id);
-    setSnackbar({ open: true, message: "Pergunta deletada", severity: "success" });
-    fetchQuestions();
-  };
-
-  const handleSave = async (data) => {
-    if (editingQuestion) {
-      await updateQuestion(editingQuestion.id, data);
-      setSnackbar({ open: true, message: "Pergunta atualizada", severity: "success" });
-    } else {
-      console.log("Creating question with data:", data);
-      console.log("Selected lesson:", selectedLesson);
-      await createQuestion(selectedLesson, data);
-      setSnackbar({ open: true, message: "Pergunta criada", severity: "success" });
-    }
-    setOpenForm(false);
-    setEditingQuestion(null);
-    fetchQuestions();
-  };
-
-  const handleOpenAlternatives = (questionId) => {
-    setSelectedQuestionId(questionId);
-    setOpenDrawer(true);
-  };
+  const showSnackbar = (message, severity = 'info') => {
+    setSnackbar({ open: true, message, severity });
+  }
   
+  useEffect(() => {
+    fetchLanguages(); 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <Box p={3}>
-      <Typography variant="h4" gutterBottom>Gerenciar Perguntas</Typography>
+    <Box> 
+      <Typography variant="h4">Questions</Typography>
+      
+      <Box display= 'flex'>
+        <CustomFilter 
+          label="Language"
+          options={['All', ...languages.map(l => l.name)]}
+          selectedIndex={filters.language}
+          onChange={(index) => {
+            const selected = index === 0 ? null : languages[index - 1];
+            const id = selected?.id || '';
+            setSelectedLanguageId(id);
+            setFilters(prev => ({ ...prev, language: index }));
+            if (id) fetchSeasons(id);
+          }}
+        /> 
+        <CustomFilter 
+          label="Season"
+          options={['All', ...seasons.map(s => s.title)]}
+          selectedIndex={filters.season}
+          onChange={(index) => {
+            const selected = seasons[index - 1];
+            const id = selected?.id || '';
+            setSelectedSeasonId(id);
+            setFilters(prev => ({ ...prev, season: index }))
+            if (id) fetchLessons(id);
 
-      <Box display="flex" gap={2} mb={3}>
-        <FormControl fullWidth>
-          <InputLabel>Season</InputLabel>
-          <Select value={selectedSeason} onChange={e => setSelectedSeason(e.target.value)}>
-            {Array.isArray(seasons) && seasons.map(s => 
-              <MenuItem key={s.id} value={s.id}>{s.title}</MenuItem>
-            )}
-          </Select>
-        </FormControl> 
-
-        <FormControl fullWidth disabled={!selectedSeason}>
-          <InputLabel>Lesson</InputLabel>
-          <Select value={selectedLesson} onChange={e => setSelectedLesson(e.target.value)}>
-            {Array.isArray(lessons) && lessons.map(l => <MenuItem key={l.id} value={l.id}>{l.title}</MenuItem>)}
-          </Select>
-        </FormControl>
-
-        <Button variant="contained" onClick={() => setOpenForm(true)} disabled={!selectedLesson}>
-          New question
+          }}
+        />
+        <CustomFilter 
+          label="Lesson"
+          options={['All', ...lessons.map(l => l.title)]}
+          selectedIndex={filters.lesson}
+          onChange={(index) => {
+            const selected = lessons[index - 1];
+            const id = selected?.id || '';
+            setSelectedLessonId(id);
+            setFilters(prev => ({ ...prev, lesson: index }))
+            if (id) fetchQuestions(id);
+          }}
+        />
+      </Box>
+      <Box mt='10px'>
+        <Button variant="text" color="primary" onClick={() => setDialogOpen(true)}>
+          Add Question
         </Button>
       </Box>
+      <NewQuestionDialog 
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onSubmit={handleCreateQuestion}
+      />
+      <Box>
+      </Box>
+      <Box display='flex' flexDirection='column'>
+          {questions.map((q) => (
+            <QuestionCard
+              key={q.id}
+              question={q}
+              editMode={editMode}
+              editedQuestion={editedQuestion}
+              setEditedQuestion={setEditedQuestion} 
+              onEdit={() => {
+                setEditMode(q.id);
+                setEditedQuestion({
+                  question: q.question,
+                  correct: q.correct,
+                  alternatives: q.alternatives.map(a => ({
+                    id: a.id,
+                    alternative: a.alternative,
+                    correct: a.correct
+                  }))
+                })
+                console.log('Dados iniciais da questão:', {
+                  id: q.id,
+                  question: q.question,
+                  alternatives: q.alternatives
+                });
+                setEditedQuestion({
+                  question: q.question,
+                  alternatives: q.alternatives.map(a => ({
+                    id: a.id,
+                    alternative: a.alternative,
+                    correct: a.correct
+                  }))
+                });
+              }}
+              onSave={async (id) => {
+                try {
+                  const correctAlternative = editedQuestion.alternatives.find(a => a.correct);
+                  console.log('Dados antes de salvar:', {
+                    id,
+                    editedQuestion,
+                    correctAlternative
+                  });
+                  await updateQuestion(id, {
+                    question: editedQuestion.question,
+                    alternatives: editedQuestion.alternatives
+                  });
 
-      {loading ? <CircularProgress /> : (
-        Array.isArray(questions) && questions.length > 0 ? questions.map(q => (
-          <Box key={q.id} border="1px solid #ccc" borderRadius={2} p={2} mb={2}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography fontWeight="bold">{q.question}</Typography>
-              <Box display="flex" gap={1}>
-                <Button size="small" onClick={() => handleEdit(q)}>Editar</Button>
-                <Button size="small" onClick={() => handleDelete(q.id)} color="error">Excluir</Button>
-                <Button size="small" onClick={() => handleOpenAlternatives(q.id)} color="secondary">Drawer</Button>
-              </Box>
-            </Box>
+                  console.log('Dados após atualização:', {
+                    updatedQuestion: {
+                      ...editedQuestion,
+                      id
+                    }
+                  });
 
-            <Box mt={1}>
-              {(alternativesMap[q.id] || []).map((alt) => (
-                <Box key={alt.id} display="flex" alignItems="center" gap={1} ml={2}>
-                  <Typography variant="body2" color={alt.correct ? "green" : "text.secondary"}>
-                    {alt.correct ? "✅" : "❌"} {alt.alternative}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </Box>
-        ))
-       : (
-          <Typography>No question was found.</Typography>
-        )
-      )}
+                  setQuestions(questions.map(q => {
+                    if (q.id === id) {
+                      return {
+                        ...q,
+                        question: editedQuestion.question,
+                        alternatives: editedQuestion.alternatives
+                      };
+                    }
+                    return q;
+                  }));
+                  setEditMode(null);
+                  await fetchQuestions(selectedLessonId);
+                  showSnackbar('Updated', 'success');
+                  console.log(correctAlternative)
+                } catch (error) {
+                  console.error('Error updating question:',
+                    error);
+                  showSnackbar('Error updating questions', 'error')
+                  
+                }
+              }}
+              onCancel={() => setEditMode(null)}
+              onDelete={async (id) => {
+                await deleteQuestion(id)
+                fetchQuestions(selectedLessonId);
+                showSnackbar('Deleted', 'success');
+              }}
+            />
+          ))}
+      </Box>
 
-      {/* Formulário de Pergunta */}
-      <Dialog open={openForm} onClose={() => setOpenForm(false)} fullWidth maxWidth="sm">
-        <DialogTitle>{editingQuestion ? "Edit question" : "New question"}</DialogTitle>
-        
-        <DialogContent>
-          <QuestionForm
-            initialData={editingQuestion}
-            onCancel={() => {
-              setOpenForm(false);
-              setEditingQuestion(null);
-            }}
-            onSave={handleSave}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Drawer de Alternativas */}
-      <Drawer anchor="right" open={openDrawer} onClose={() => setOpenDrawer(false)}>
-        <Box width={400} p={2}>
-          <Typography variant="h6" gutterBottom>Alternativas</Typography>
-          <AlternativeList questionId={selectedQuestionId} />
-        </Box>
-      </Drawer>
-
-        <Snackbar
+      <Snackbar
         open={snackbar.open}
-        autoHideDuration={3000}
+        autoHideDuration={4000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
       >
-        <MuiAlert severity={snackbar.severity} elevation={6} variant="filled">
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          severity={snackbar.severity}
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+        >
           {snackbar.message}
         </MuiAlert>
       </Snackbar>
     </Box>
-  );
+  )
 }
+
+export default AdminQuestions

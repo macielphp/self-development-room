@@ -2,7 +2,7 @@ import express from 'express';
 import authAdmin from '../middleware/authAdmin.js';
 import {
   getAllSeason,
-  getSeasonById,
+  getSeasonsByLanguageId,
   createSeason,
   updateSeason,
   deleteSeason
@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 
 router.get('/', authAdmin, getAllSeason);
-router.get('/:id', authAdmin, getSeasonById);
+router.get('/by-language/:id', authAdmin, getSeasonsByLanguageId);
 router.post('/', authAdmin, createSeason);
 router.put('/', authAdmin, updateSeason);
 router.delete('/', authAdmin, deleteSeason);
