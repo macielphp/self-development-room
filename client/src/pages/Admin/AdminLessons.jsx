@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, TextField, Button, MenuItem,
-  Snackbar, IconButton
+  Snackbar, IconButton, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { Edit, Delete } from '@mui/icons-material';
@@ -19,6 +19,7 @@ const AdminLessons = () => {
   const [selectedSeasonId, setSelectedSeasonId] = useState('');
   const [editedLesson, setEditedLesson] = useState({ title: '', lesson_content: '', lesson_order: 1 });
   const [editMode, setEditMode] = useState(null);
+  const [open, setOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
@@ -89,6 +90,14 @@ const AdminLessons = () => {
       showSnackbar('Error deleting lesson', 'error');
     }
   };
+
+  const handleDialogOpen = () => {
+    setOpen(true);
+  }
+  const handleDialogClose = () => {
+    setOpen(false);
+  }
+
   useEffect(() => {
     fetchLanguages();
     fetchLessons();
@@ -106,6 +115,14 @@ const AdminLessons = () => {
 
       {/* Add New Lesson */}
       <Box display="flex" flexDirection="column" gap={2} mb={3} width='100%'>
+        <Button onClick={handleDialogOpen}>ADD LESSON</Button>
+        <Dialog open={open} onClose={handleDialogClose}>
+          <DialogActions>
+            <Button onClick={handleDialogClose}>Close</Button>
+          </DialogActions>
+          <DialogTitle>Add lesson</DialogTitle>
+
+        </Dialog>
         <TextField
           select
           label="Select Language"

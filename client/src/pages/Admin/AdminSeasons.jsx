@@ -57,8 +57,9 @@ const AdminSeasons = () => {
       setEditMode(null);
       fetchSeasons();
       showSnackbar('Season updated successfully', 'success');
-    } catch {
+    } catch (error) {
       showSnackbar('Error updating season', 'error');
+      console.error('Error updating season:', error);
     }
   };
 
@@ -80,9 +81,10 @@ const AdminSeasons = () => {
   return (
     <Box p={3}>
       <Typography variant="h4" mb={2}>Manage Seasons</Typography>
-
+      
       {/* Add New Season */}
       <Box display="flex" gap={2} mb={3} width='100%'>
+        
         <TextField
           label="Season Title"
           value={newTitle}
@@ -196,7 +198,7 @@ const AdminSeasons = () => {
           variant="filled"
           onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
-        >
+          >
           {snackbar.message}
         </MuiAlert>
       </Snackbar>

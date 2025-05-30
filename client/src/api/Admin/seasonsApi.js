@@ -17,8 +17,8 @@ export const createSeason = async (title, language_id) => {
 };
 
 export const updateSeason = async (id, title) => {
-    await api.put(API_URL, { id, title });
-}
+        await api.put(API_URL, { id, title });
+};
 
 export const deleteSeason = async (id) => {
     await api.delete(API_URL, { data: { id } })

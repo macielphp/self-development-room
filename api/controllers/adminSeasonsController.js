@@ -58,13 +58,13 @@ const createSeason = async (req, res) => {
 
   // 📝 Atualizar uma temporada
 const updateSeason = async (req, res) => {
-    const { id, newTitle } = req.body;
+    const { id, title } = req.body;
     try {
         await pool.query(`
         UPDATE seasons
         SET title = $1
         WHERE id = $2
-        `, [newTitle, id]);
+        `, [title, id]);
         res.json({ message: 'Season updated successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
