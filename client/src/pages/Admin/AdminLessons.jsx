@@ -5,10 +5,13 @@ import {
   Snackbar, IconButton, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import { Edit, Delete } from '@mui/icons-material';
 import { getAllLessons, createLesson, updateLesson, deleteLesson } from '../../api/Admin/lessonsApi';
 import { getAllSeasons } from '../../api/Admin/seasonsApi';
 import { getAllLanguages } from '../../api/Admin/languagesApi';
+
 
 const AdminLessons = () => {
   const [languages, setLanguages] = useState([]);
@@ -23,6 +26,8 @@ const AdminLessons = () => {
   const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const fetchLanguages = async () => {
     const data = await getAllLanguages();
@@ -116,53 +121,58 @@ const AdminLessons = () => {
       {/* Add New Lesson */}
       <Box display="flex" flexDirection="column" gap={2} mb={3} width='100%'>
         <Button onClick={handleDialogOpen}>ADD LESSON</Button>
-        <Dialog open={open} onClose={handleDialogClose}>
-          <DialogActions>
-            <Button onClick={handleDialogClose}>Close</Button>
-          </DialogActions>
-          <DialogTitle>Add lesson</DialogTitle>
+        <Dialog fullScreen={fullScreen} open={open} onClose={handleDialogClose} aria-labelledby="responsive-dialog-title" fullWidth maxWidth="lg">
+          <DialogTitle id="responsive-dialog-title">Add lesson</DialogTitle>
+          <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', gap: 2}}>
+            <Box>
+              <TextField
+                select
+                label="Select Language"
+                value={selectedLanguageId}
+                onChange={(e) => {
+                  setSelectedLanguageId(e.target.value);
+                  setSeasons([]);
+                  setSelectedSeasonId('');
+                }}
+                sx={{ width: '250px' }}
+              >
+                {languages.map(language => (
+                  <MenuItem key={language.id} value={language.id}>{language.name}</MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                select
+                label="Select Season"
+                value={selectedSeasonId}
+                onChange={(e) => setSelectedSeasonId(e.target.value)}
+                sx={{ width: '250px' }}
+                disabled={!selectedLanguageId}
+              >
+                {seasons.map(season => (
+                  <MenuItem key={season.id} value={season.id}>{season.title}</MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                label="Lesson Title"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+              />
 
+            </Box>
+            <TextField
+              label="Lesson Content"
+              value={newContent}
+              onChange={(e) => setNewContent(e.target.value)}
+              multiline
+              rows={4}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" onClick={handleAddLesson}>Save</Button>
+            <Button onClick={handleDialogClose}>Cancel</Button>
+          </DialogActions>
         </Dialog>
-        <TextField
-          select
-          label="Select Language"
-          value={selectedLanguageId}
-          onChange={(e) => {
-            setSelectedLanguageId(e.target.value);
-            setSeasons([]);
-            setSelectedSeasonId('');
-          }}
-          sx={{ width: '300px', mb: 2 }}
-        >
-          {languages.map(language => (
-            <MenuItem key={language.id} value={language.id}>{language.name}</MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          select
-          label="Select Season"
-          value={selectedSeasonId}
-          onChange={(e) => setSelectedSeasonId(e.target.value)}
-          sx={{ width: '300px' }}
-          disabled={!selectedLanguageId}
-        >
-          {seasons.map(season => (
-            <MenuItem key={season.id} value={season.id}>{season.title}</MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          label="Lesson Title"
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-        />
-        <TextField
-          label="Lesson Content"
-          value={newContent}
-          onChange={(e) => setNewContent(e.target.value)}
-          multiline
-          rows={4}
-        />
-        <Button variant="contained" onClick={handleAddLesson}>Add Lesson</Button>
+        
       </Box>
 
       {/* Lessons Table */}
